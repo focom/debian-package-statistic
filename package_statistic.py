@@ -69,8 +69,6 @@ def main():
 
         with gzip.open(gzip_filename, "r") as f:
             for line in f:
-                # match_result = re.match("([.\S]*)(\s*)([.\S]*)", str(line))
-                # packages = match_result.group(3).replace("\\n", "").replace("'","").split(",")
                 match_result = str(line).split(' ')[-1]
                 packages = match_result.replace("\\n", "").replace("'","").split(",")
                 for package in packages:
