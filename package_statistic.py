@@ -3,7 +3,6 @@ import gzip
 import os
 import sys
 import tempfile
-from pathlib import Path
 
 import requests
 
@@ -36,12 +35,12 @@ def parse_arch(args):
 def download_file(download_dir, arch):
     file_url = DEBIAN_FTP_URL + "Contents-" + arch + ".gz"
     local_filename = os.path.join(download_dir, file_url.split("/")[-1])
-    # NOTE the stream=True parameter below
-    with requests.get(file_url, stream=True) as r:
-        r.raise_for_status()
-        with open(local_filename, "wb") as f:
-            for chunk in r.iter_content(chunk_size=8192):
-                f.write(chunk)
+
+    with requests.get(file_url, stream=True) as stream:
+        stream.raise_for_status()
+        with open(local_filename, "wb") as gzip_file:
+            for chunk in stream.iter_content(chunk_size=8192):
+                gzip_file.write(chunk)
     return local_filename
 
 
@@ -63,10 +62,10 @@ def main():
 
         package_count = {}
 
-        with gzip.open(gzip_filename, "r") as f:
-            for line in f:
+        with gzip.open(gzip_filename, "r") as content_file:
+            for line in content_file:
                 match_result = str(line).split(' ')[-1]
-                packages = match_result.replace("\\n", "").replace("'","").split(",")
+                packages = match_result.replace("\\n", "").replace("'", "").split(",")
                 for package in packages:
                     package = package.split('/')[1]
                     try:
