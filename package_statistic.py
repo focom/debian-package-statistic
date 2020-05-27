@@ -5,7 +5,6 @@ import sys
 import tempfile
 from pathlib import Path
 
-# install request with: pip install requests
 import requests
 
 AVAILABLES_ARCH = [
@@ -61,9 +60,6 @@ def main():
     with tempfile.TemporaryDirectory() as tempdir:
         arch = parse_arch(sys.argv)
         gzip_filename = download_file(tempdir, arch)
-
-        content_filepath = os.path.join(tempdir, "content_file.txt")
-        Path(content_filepath).touch()
 
         package_count = {}
 
