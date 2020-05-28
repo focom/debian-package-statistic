@@ -23,6 +23,7 @@ DEBIAN_FTP_URL = "http://ftp.uk.debian.org/debian/dists/stable/main/"
 
 
 def parse_arch(args):
+    # parsing the arg to make the script a bit foolproof
     if len(args) == 1:
         print("Please pass a arch as a parameter")
         sys.exit(1)
@@ -39,6 +40,7 @@ def download_file(download_dir, arch):
     file_url = DEBIAN_FTP_URL + "Contents-" + arch + ".gz"
     local_filename = os.path.join(download_dir, file_url.split("/")[-1])
 
+    # Boiler plate code for request to download a file
     with requests.get(file_url, stream=True) as stream:
         stream.raise_for_status()
         with open(local_filename, "wb") as gzip_file:
@@ -48,8 +50,10 @@ def download_file(download_dir, arch):
 
 
 def print_top_10_packages(package_count):
+    # To print the most referenced package, we need to sort them
     sorted_packages = sorted(package_count, key=package_count.__getitem__, reverse=True)
 
+    # We can now print the first 10
     i = 0
     for package in sorted_packages:
         i += 1
@@ -62,10 +66,13 @@ def process_content_file(content_file):
     package_count = {}
 
     for line in content_file:
+        # package and file are sperated by whitespace, we retrive only the packages
         match_result = str(line).split(" ")[-1]
+        # we then split the packages in a list
         packages = match_result.replace("\\n", "").replace("'", "").split(",")
         for package in packages:
             package = package.split("/")[1]
+            # here we populate the dict holding the package counts
             try:
                 package_count[package] += 1
             except KeyError:
@@ -74,6 +81,7 @@ def process_content_file(content_file):
 
 
 def main():
+    # Temp directory that get erased at the end of execution
     with tempfile.TemporaryDirectory() as tempdir:
         arch = parse_arch(sys.argv)
         gzip_filename = download_file(tempdir, arch)
@@ -82,6 +90,7 @@ def main():
             package_count = process_content_file(content_file)
 
         print_top_10_packages(package_count)
+        # We can exit with code 0 if no error was raised
         sys.exit(0)
 
 
