@@ -1,0 +1,3 @@
+usr/share/help/hu/mate-user-guide/legal.xml             x11/mate-user-guide
+usr/share/help/hu/mateweather/figures/mateweather-details.png x11/mate-applets-common
+usr/share/help/hu/mateweather/figures/mateweather-menu-prefs.png x11/mate-applets-common

@@ -23,12 +23,15 @@ DEBIAN_FTP_URL = "http://ftp.uk.debian.org/debian/dists/stable/main/"
 
 
 def parse_arch(args):
+    if len(args) == 1:
+        print("Please pass a arch as a parameter")
+        sys.exit(1)
     if len(args) > 2:
         print("Too many argument")
-        sys.exit()
+        sys.exit(1)
     if args[1] not in AVAILABLES_ARCH:
         print(f"{args[1]} is not a recognized arch")
-        sys.exit()
+        sys.exit(1)
     return args[1]
 
 
@@ -55,25 +58,31 @@ def print_top_10_packages(package_count):
         print(f"{i}. {package}\t{package_count[package]}")
 
 
+def process_content_file(content_file):
+    package_count = {}
+
+    for line in content_file:
+        match_result = str(line).split(" ")[-1]
+        packages = match_result.replace("\\n", "").replace("'", "").split(",")
+        for package in packages:
+            package = package.split("/")[1]
+            try:
+                package_count[package] += 1
+            except KeyError:
+                package_count[package] = 1
+    return package_count
+
+
 def main():
     with tempfile.TemporaryDirectory() as tempdir:
         arch = parse_arch(sys.argv)
         gzip_filename = download_file(tempdir, arch)
 
-        package_count = {}
-
         with gzip.open(gzip_filename, "r") as content_file:
-            for line in content_file:
-                match_result = str(line).split(' ')[-1]
-                packages = match_result.replace("\\n", "").replace("'", "").split(",")
-                for package in packages:
-                    package = package.split('/')[1]
-                    try:
-                        package_count[package] += 1
-                    except KeyError:
-                        package_count[package] = 1
+            package_count = process_content_file(content_file)
 
         print_top_10_packages(package_count)
+        sys.exit(0)
 
 
 if __name__ == "__main__":
