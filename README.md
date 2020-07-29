@@ -1,5 +1,9 @@
 # Canonical challenge report
 
+## Motivation
+
+Retrieve the 10 most popular package in the debian release.
+
 I spent ~ 4 hours understanding the assignment, writing the code, unittests and
 validate coding styled
 
@@ -29,7 +33,7 @@ pip install requests pytest prospector isort
 ```
 
 ## Running the script
-with poetry
+To retrieve the 10 most popular package for arm64 using poetry
 ```bash
 poetry run package_statistic.py arm64
 ```
